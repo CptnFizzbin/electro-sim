@@ -1,8 +1,8 @@
-import { Connection } from './Wire';
+import { Diode } from './Diode';
 
-export class Battery {
-  public readonly connections = {
-    positive: new Connection(),
-    negative: new Connection(),
-  };
+export class Battery extends Diode {
+  constructor () {
+    super();
+    this.positivePin.emitCurrent(5);
+  }
 }

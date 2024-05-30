@@ -1,8 +1,11 @@
-import { Connection } from './Wire';
+import { Diode } from './Diode';
 
-export class LightBulb {
-  public readonly connections = {
-    positive: new Connection(),
-    negative: new Connection(),
-  };
+export class LightBulb extends Diode {
+  public get isLit () {
+    return this.positivePin.amps >= 1;
+  }
+
+  public get isUnlit () {
+    return !this.isLit;
+  }
 }

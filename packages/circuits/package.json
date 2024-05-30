@@ -2,12 +2,16 @@
   "name": "electro-sim-circuits",
   "version": "0.1.0",
   "devDependencies": {
-    "@eslint/js": "^9.3.0",
+    "@eslint/js": "^8.56.0",
     "@tsconfig/node22": "^22.0.0",
-    "eslint": "^9.3.0",
+    "@types/node": "^20.12.13",
+    "eslint": "^8.56.0",
     "globals": "^15.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.11.0"
+  },
+  "dependencies": {
+    "winston": "^3.13.0"
   }
 }

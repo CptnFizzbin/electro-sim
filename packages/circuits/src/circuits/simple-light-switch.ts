@@ -1,14 +1,29 @@
 import { Battery } from '../components/Battery';
 import { Switch } from '../components/Switch';
 import { LightBulb } from '../components/LightBulb';
-import { Wire } from '../components/Wire';
+import { logger } from '../logger';
+import { Wire } from '../components/Diode';
 
-const battery = new Battery()
-const lightSwitch = new Switch()
-const light = new LightBulb()
+const ground = new Wire();
+const battery = new Battery();
+const switchA = new Switch();
+const switchB = new Switch();
+const light = new LightBulb();
 
-battery.connections.negative
-  .connectTo(lightSwitch.connections.input);
+battery.positivePin.connect(ground);
+battery.negativePin.connect(switchA.inputPin);
+switchA.closedPin.connect(switchB.inputPin);
+switchB.closedPin.connect(light.positivePin);
+light.negativePin.connect(ground);
 
-lightSwitch.connections.closed
-  .connectTo(light.connections.negative)
+
+logger.info(`Light off? ${light.isUnlit}`);
+
+switchA.close();
+logger.info(`Light off? ${light.isUnlit}`);
+
+switchB.close();
+logger.info(`Light on? ${light.isUnlit}`);
+
+switchA.open();
+logger.info(`Light off? ${light.isUnlit}`);
