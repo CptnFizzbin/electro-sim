@@ -1,0 +1,10 @@
+{
+  "name": "electro-sim",
+  "packageManager": "yarn@4.2.2",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "yarn workspace electro-sim-app start"
+  }
+}
