@@ -1,6 +1,9 @@
 {
   "name": "electro-sim-circuits",
   "version": "0.1.0",
+  "scripts": {
+    "start": "yarn vite-node src/circuits/simple-light-switch.ts"
+  },
   "devDependencies": {
     "@eslint/js": "^8.56.0",
     "@tsconfig/node22": "^22.0.0",

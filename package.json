@@ -5,6 +5,6 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "yarn workspace electro-sim-app start"
+    "start": "yarn workspace electro-sim-circuits start"
   }
 }
