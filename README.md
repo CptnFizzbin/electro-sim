@@ -1,9 +1,13 @@
 # electro-sim
 
-## Run
-
+## Run natively
 ```sh
-# clone repo
 yarn install
 yarn start
+```
+
+## Run with docker
+```sh
+yarn docker:build
+yarn docker:run
 ```
