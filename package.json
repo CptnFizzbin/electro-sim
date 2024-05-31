@@ -5,6 +5,8 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "yarn workspace electro-sim-circuits start"
+    "start": "yarn workspace electro-sim-circuits start",
+    "docker:build": "docker build --tag=electro-sim:latest .",
+    "docker:run": " docker run -it electro-sim:latest"
   }
 }
