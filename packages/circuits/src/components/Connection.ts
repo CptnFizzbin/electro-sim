@@ -75,8 +75,8 @@ export class Connection {
   }
 
   public toString () {
-    if (this.isPowerSource) return `─!${this.#sourceAmps}!─`;
-    if (this.isConnectedToPowerSource) return `──${this.amps}──`;
+    if (this.isPowerSource) return `─!↯!─`;
+    if (this.isConnectedToPowerSource) return `──↯──`;
     return `──.──`;
   }
 

@@ -8,21 +8,14 @@ export class Diode {
     this.negativePin.connectOneWay(this.positivePin);
   }
 
-  get amps () {
+  public get powered () {
+    return this.amps >= 1;
+  }
+
+  public get amps () {
     const closedCircuit = this.positivePin.isConnectedTo(this.negativePin);
     if (closedCircuit) return this.negativePin.amps;
     return 0;
-  }
-
-  static connect (source: Connection, target: Connection): Diode {
-    const diode = new Diode();
-    diode.positivePin.connect(source);
-    diode.negativePin.connect(target);
-    return diode;
-  }
-
-  public emitCurrent (amps: number) {
-    this.positivePin.emitCurrent(amps);
   }
 
   public toString () {

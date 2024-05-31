@@ -10,10 +10,6 @@ export class LightBulb extends Diode {
   }
 
   public toString () {
-    return [
-      this.negativePin,
-      this.isLit ? '(*)' : '( )',
-      this.positivePin,
-    ].join('');
+    return this.isLit ? '(*)' : '( )';
   }
 }

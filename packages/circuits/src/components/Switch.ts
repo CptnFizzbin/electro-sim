@@ -57,10 +57,6 @@ export class Switch {
   }
 
   public toString (): string {
-    return [
-      this.inputPin,
-      this.isOpen ? '═╱═' : '═══',
-      this.closedPin,
-    ].join('');
+    return this.isOpen ? '═╗ ' : '═══';
   }
 }
