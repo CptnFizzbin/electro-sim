@@ -1,29 +1,47 @@
 import { Battery } from '../components/Battery';
 import { Switch } from '../components/Switch';
 import { LightBulb } from '../components/LightBulb';
-import { logger } from '../logger';
-import { Wire } from '../components/Diode';
+
+import { Wire } from '../components/Wire';
+import * as process from 'node:process';
 
 const ground = new Wire();
-const battery = new Battery();
+const battery = new Battery(5);
 const switchA = new Switch();
 const switchB = new Switch();
-const light = new LightBulb();
+const lightA = new LightBulb();
+const lightB = new LightBulb();
 
-battery.positivePin.connect(ground);
-battery.negativePin.connect(switchA.inputPin);
-switchA.closedPin.connect(switchB.inputPin);
-switchB.closedPin.connect(light.positivePin);
-light.negativePin.connect(ground);
+ground.connect(
+  battery.negativePin,
+  lightA.positivePin,
+  lightB.positivePin,
+);
 
+battery.positivePin.connect(
+  switchA.inputPin,
+  switchB.inputPin,
+);
 
-logger.info(`Light off? ${light.isUnlit}`);
+switchA.closedPin.connect(
+  lightA.negativePin,
+);
 
-switchA.close();
-logger.info(`Light off? ${light.isUnlit}`);
+switchB.closedPin.connect(
+  lightB.negativePin,
+);
 
-switchB.close();
-logger.info(`Light on? ${light.isUnlit}`);
+setInterval(() => {
+  process.stdout.cursorTo(0, 0);
+  process.stdout.clearScreenDown();
 
-switchA.open();
-logger.info(`Light off? ${light.isUnlit}`);
+  process.stdout.write([
+    new Date().toISOString(),
+    `╭─${battery}─┬──${switchA}───${lightA}───╮`,
+    `|                   └──${switchB}───${lightB}───┤`,
+    `╰──────────────────────────────────────────────────────╯`,
+  ].join('\n'));
+}, 100);
+
+setInterval(() => switchA.toggle(), 3000);
+setInterval(() => switchB.toggle(), 1000);

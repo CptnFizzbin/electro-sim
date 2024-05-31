@@ -1,10 +1,16 @@
 type ChangeHandler = () => void
 
+export const allConnections = new Set<Connection>();
+
 export class Connection {
-  private connectedTo = new Set<Connection>();
-  private handlers = new Set<ChangeHandler>();
+  private readonly connectedTo = new Set<Connection>();
+  private readonly handlers = new Set<ChangeHandler>();
   #sourceAmps = 0;
   #amps = 0;
+
+  constructor () {
+    allConnections.add(this);
+  }
 
   public get sourceAmps () {
     return this.#sourceAmps;
@@ -14,22 +20,25 @@ export class Connection {
     return this.#amps;
   }
 
+  public get isConnectedToPowerSource () {
+    return !!this.getPowerSource();
+  }
+
+  public get isPowerSource () {
+    return this.#sourceAmps >= 1;
+  }
+
   public emitCurrent (amps: number) {
     this.#sourceAmps = amps;
-    this.emitUpdate();
+  }
+
+  public getPowerSource () {
+    return this.findNode((node) => node.isPowerSource && node.isConnectedTo(this));
   }
 
   public update () {
-    const powerSource = this.findNode((node) => (
-      node.sourceAmps >= 1
-      && node.isConnectedTo(this)
-    ));
-
-    if (powerSource) {
-      this.#amps = powerSource.sourceAmps;
-    } else {
-      this.#amps = 0;
-    }
+    const powerSource = this.getPowerSource();
+    this.#amps = powerSource ? powerSource.sourceAmps : 0;
 
     this.handlers.forEach((handler) => handler());
   }
@@ -42,20 +51,33 @@ export class Connection {
     return !!this.findNode((node) => node === target);
   }
 
-  public connect (...targets: Connection[]) {
+  public connectOneWay (...targets: Connection[]) {
     targets.forEach((target) => this.connectedTo.add(target));
+    return this;
+  }
 
-    this.emitUpdate();
+  public connect (...targets: Connection[]) {
+    targets.forEach((target) => {
+      this.connectOneWay(target);
+      target.connectOneWay(this);
+    });
 
     return this;
   }
 
   public disconnect (...targets: Connection[]) {
-    targets.forEach((target) => this.connectedTo.delete(target));
-
-    this.emitUpdate();
+    targets.forEach((target) => {
+      this.connectedTo.delete(target);
+      target.connectedTo.delete(this);
+    });
 
     return this;
+  }
+
+  public toString () {
+    if (this.isPowerSource) return `─!${this.#sourceAmps}!─`;
+    if (this.isConnectedToPowerSource) return `──${this.amps}──`;
+    return `──.──`;
   }
 
   private findNode (searchFn: (node: Connection) => boolean): Connection | undefined {
@@ -73,25 +95,6 @@ export class Connection {
 
       for (const connected of node.connectedTo.values()) {
         if (!checked.has(connected)) queue.push(connected);
-      }
-    }
-  }
-
-  private emitUpdate () {
-    const updated = new Set<Connection>();
-
-    const queue = new Array<Connection>();
-    queue.push(this);
-
-    while (queue.length >= 1) {
-      const node = queue.shift();
-      if (!node) return;
-
-      node.update();
-      updated.add(node);
-
-      for (const connected of node.connectedTo.values()) {
-        if (!updated.has(connected)) queue.push(connected);
       }
     }
   }

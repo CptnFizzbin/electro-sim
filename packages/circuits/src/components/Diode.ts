@@ -5,26 +5,31 @@ export class Diode {
   public readonly negativePin = new Connection();
 
   constructor () {
-    this.positivePin.connect(this.negativePin);
-  }
-}
-
-export class Wire extends Connection {
-  connect (...targets: Connection[]) {
-    targets.forEach((target) => {
-      super.connect(target);
-      target.connect(this);
-    });
-
-    return this;
+    this.negativePin.connectOneWay(this.positivePin);
   }
 
-  disconnect (...targets: Connection[]) {
-    targets.forEach((target) => {
-      super.connect(target);
-      target.connect(this);
-    });
+  get amps () {
+    const closedCircuit = this.positivePin.isConnectedTo(this.negativePin);
+    if (closedCircuit) return this.negativePin.amps;
+    return 0;
+  }
 
-    return this;
+  static connect (source: Connection, target: Connection): Diode {
+    const diode = new Diode();
+    diode.positivePin.connect(source);
+    diode.negativePin.connect(target);
+    return diode;
+  }
+
+  public emitCurrent (amps: number) {
+    this.positivePin.emitCurrent(amps);
+  }
+
+  public toString () {
+    return [
+      this.negativePin,
+      '▷|',
+      this.positivePin,
+    ].join('');
   }
 }

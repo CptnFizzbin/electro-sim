@@ -1,10 +1,11 @@
 {
-  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     "esModuleInterop": true,
     "strict": true,
+    "node": true,
     "lib": [
-      "ES2023"
+      "ES2023",
+      "dom"
     ]
   }
 }

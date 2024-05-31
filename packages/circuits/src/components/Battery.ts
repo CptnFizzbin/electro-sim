@@ -1,8 +1,11 @@
-import { Diode } from './Diode';
+import { PowerSource } from './PowerSource';
 
-export class Battery extends Diode {
-  constructor () {
-    super();
-    this.positivePin.emitCurrent(5);
+export class Battery extends PowerSource {
+  public toString (): string {
+    return [
+      this.negativePin,
+      `[-   +]`,
+      this.positivePin,
+    ].join('');
   }
 }

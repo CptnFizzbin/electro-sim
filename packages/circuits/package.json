@@ -7,11 +7,8 @@
     "@types/node": "^20.12.13",
     "eslint": "^8.56.0",
     "globals": "^15.3.0",
-    "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^7.11.0"
-  },
-  "dependencies": {
-    "winston": "^3.13.0"
+    "typescript-eslint": "^7.11.0",
+    "vite-node": "^1.6.0"
   }
 }

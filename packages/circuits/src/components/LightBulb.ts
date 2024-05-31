@@ -2,10 +2,18 @@ import { Diode } from './Diode';
 
 export class LightBulb extends Diode {
   public get isLit () {
-    return this.positivePin.amps >= 1;
+    return this.amps >= 1;
   }
 
   public get isUnlit () {
     return !this.isLit;
+  }
+
+  public toString () {
+    return [
+      this.negativePin,
+      this.isLit ? '(*)' : '( )',
+      this.positivePin,
+    ].join('');
   }
 }
