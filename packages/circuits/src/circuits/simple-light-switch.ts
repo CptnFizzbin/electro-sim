@@ -5,30 +5,35 @@ import { LightBulb } from '../components/LightBulb';
 import { Wire } from '../components/Wire';
 import * as process from 'node:process';
 
-const ground = new Wire();
 const battery = new Battery(5);
 const switchA = new Switch();
 const switchB = new Switch();
 const lightA = new LightBulb();
 const lightB = new LightBulb();
+const lightC = new LightBulb();
 
-ground.connect(
-  battery.negativePin,
-  lightA.positivePin,
-  lightB.positivePin,
-);
-
-battery.positivePin.connect(
+Wire.from(battery.positivePin).to(
   switchA.inputPin,
   switchB.inputPin,
 );
 
-switchA.closedPin.connect(
+Wire.from(switchA.closedPin).to(
   lightA.negativePin,
 );
 
-switchB.closedPin.connect(
+Wire.from(switchA.openPin).to(
+  lightC.negativePin,
+);
+
+Wire.from(switchB.closedPin).to(
   lightB.negativePin,
+);
+
+Wire.connect(
+  lightA.positivePin,
+  lightB.positivePin,
+  lightC.positivePin,
+  battery.negativePin,
 );
 
 setInterval(() => {
@@ -38,6 +43,7 @@ setInterval(() => {
   process.stdout.write([
     new Date().toISOString(),
     `╭─${battery}─┬──${switchA}───${lightA}───╮`,
+    `|                   │        ╙─────────${lightC}───┤`,
     `|                   └──${switchB}───${lightB}───┤`,
     `╰──────────────────────────────────────────────────────╯`,
   ].join('\n'));
