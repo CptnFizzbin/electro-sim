@@ -1,11 +1,19 @@
 {
   "compilerOptions": {
+    "alwaysStrict": true,
     "esModuleInterop": true,
-    "strict": true,
-    "node": true,
     "lib": [
-      "ES2023",
-      "dom"
-    ]
-  }
+      "ES2022"
+    ],
+    "noEmit": true,
+    "noImplicitAny": true,
+    "strict": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  },
+  "include": [
+    "src/__tests__/",
+    "src/"
+  ]
 }

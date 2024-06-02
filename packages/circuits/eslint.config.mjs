@@ -1,6 +1,7 @@
 import globals from 'globals';
 import pluginJs from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import pluginTypescript from 'typescript-eslint';
+import pluginImport from 'eslint-plugin-import';
 
 export default [
   {
@@ -9,5 +10,23 @@ export default [
     },
   },
   pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...pluginTypescript.configs.recommended,
+  {
+    plugins: {
+      import: pluginImport,
+    },
+    settings: {
+      ...pluginImport.configs.typescript.settings,
+    },
+    rules: {
+      ...pluginImport.configs.recommended.rules,
+      ...pluginImport.configs.typescript.rules,
+      'import/no-cycle': 'error',
+    },
+    languageOptions: {
+      parserOptions: {
+        ...pluginImport.configs.recommended.parserOptions,
+      },
+    },
+  },
 ];

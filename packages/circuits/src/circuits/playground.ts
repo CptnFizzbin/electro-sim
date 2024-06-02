@@ -1,60 +1,68 @@
+import { LightBulb, Switch, SwitchState } from '../components';
+import { Diagram } from '../lib';
 import { Battery } from '../components/Battery';
-import { Switch } from '../components/Switch';
-import { LightBulb } from '../components/LightBulb';
 
-import { Wire } from '../components/Wire';
-import * as process from 'node:process';
+export function createPlaygroundCircuit () {
+  const battery = new Battery('battery', 5);
+  const switchA = new Switch('switchA', SwitchState.CLOSED);
+  const switchB = new Switch('switchB', SwitchState.CLOSED);
+  const switchO = new Switch('switchC', SwitchState.CLOSED);
+  const lightA = new LightBulb('lightA');
+  const lightB = new LightBulb('lightB');
+  const lightC = new LightBulb('lightC');
 
-const battery = new Battery(5);
-const switchA = new Switch();
-const switchB = new Switch();
-const switchC = new Switch();
-const lightA = new LightBulb();
-const lightB = new LightBulb();
-const lightC = new LightBulb();
+  battery.positivePin.connect(
+    switchA.inputPin,
+    switchB.inputPin,
+  );
 
-const w1 = Wire.from(battery.positivePin).to(
-  switchA.inputPin,
-  switchB.inputPin,
-);
+  switchA.closedPin.connect(
+    lightA.negativePin,
+  );
 
-const w2 = Wire.from(switchA.closedPin).to(
-  lightA.negativePin,
-);
+  switchA.openPin.connect(
+    lightB.negativePin,
+  );
 
-const w3 = Wire.from(switchA.openPin).to(
-  lightC.negativePin,
-);
+  switchB.closedPin.connect(
+    lightC.negativePin,
+  );
 
-const w4 = Wire.from(switchB.closedPin).to(
-  lightB.negativePin,
-);
+  switchO.inputPin.connect(
+    lightA.positivePin,
+    lightB.positivePin,
+    lightC.positivePin,
+  );
 
-const w5 = Wire.connect(
-  lightA.positivePin,
-  lightB.positivePin,
-  lightC.positivePin,
-  switchC.closedPin,
-);
+  switchO.closedPin.connect(
+    battery.negativePin,
+  );
 
-const w6 = Wire.connect(
-  switchC.inputPin,
-  battery.negativePin,
-);
+  const diagram = new Diagram(
+    [
+      `─>────┬─────$SW-A──────$LI-A─────╮`,
+      `      │       ╙────────$LI-B─────┤`,
+      `      └─────$SW-B──────$LI-C─────┤`,
+      `─<──────────$SW-O────────────────╯`,
+    ].join('\n'),
+    {
+      'SW-A': switchA,
+      'SW-B': switchB,
+      'SW-O': switchO,
+      'LI-A': lightA,
+      'LI-B': lightB,
+      'LI-C': lightC,
+    },
+  );
 
-setInterval(() => {
-  process.stdout.cursorTo(0, 0);
-  process.stdout.clearScreenDown();
-
-  process.stdout.write([
-    new Date().toISOString(),
-    `╭─${battery}─${w1}─┬─${w1}─${switchA}──${w2}──${lightA}──${w5}──╮`,
-    `|                 │        ╙───${w3}──${lightC}──${w5}──┤`,
-    `|                 └─${w1}─${switchB}──${w4}──${lightB}──${w5}──┤`,
-    `╰──${w6}─────────${switchC}───────────────────────${w5}──╯`,
-  ].join('\n'));
-}, 100);
-
-setInterval(() => switchA.toggle(), 1000);
-setInterval(() => switchB.toggle(),  600);
-setInterval(() => switchC.toggle(), 1300);
+  return {
+    diagram,
+    battery,
+    switchA,
+    switchB,
+    switchO,
+    lightA,
+    lightB,
+    lightC,
+  };
+}

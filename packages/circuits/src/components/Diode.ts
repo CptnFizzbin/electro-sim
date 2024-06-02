@@ -1,28 +1,19 @@
-import { Connection } from './Connection';
+import { CircuitNode, makeId } from '../lib';
 
 export class Diode {
-  public readonly positivePin = new Connection();
-  public readonly negativePin = new Connection();
+  public readonly positivePin: CircuitNode;
+  public readonly negativePin: CircuitNode;
 
-  constructor () {
+  constructor (
+    public readonly name: string = `Diode-${makeId()}`,
+    private readonly direction: 'left' | 'right' = 'right',
+  ) {
+    this.positivePin = new CircuitNode(`${name}[+]`)
+    this.negativePin = new CircuitNode(`${name}[-]`)
     this.negativePin.connectOneWay(this.positivePin);
   }
 
-  public get powered () {
-    return this.amps >= 1;
-  }
-
-  public get amps () {
-    const closedCircuit = this.positivePin.isConnectedTo(this.negativePin);
-    if (closedCircuit) return this.negativePin.amps;
-    return 0;
-  }
-
-  public toString () {
-    return [
-      this.negativePin,
-      '▷|',
-      this.positivePin,
-    ].join('');
+  public toString (): string {
+    return this.direction === 'right' ? '─▷|─' : '─|◁─';
   }
 }

@@ -1,22 +1,51 @@
-import { Connection } from './Connection';
-import { Wire } from './Wire';
+import { CircuitNode, makeId, Simulation, SimulationItem } from '../lib';
 
 export enum SwitchState {
   OPEN,
   CLOSED,
 }
 
-export class Switch {
-  public readonly inputPin = new Connection();
-  public readonly closedPin = new Connection();
-  public readonly openPin = new Connection();
+export class Switch implements SimulationItem {
+  public readonly inputPin: CircuitNode;
+  public readonly closedPin: CircuitNode;
+  public readonly openPin: CircuitNode;
+  private readonly bridge: CircuitNode;
 
-  protected state: SwitchState;
-  private bridge = new Wire();
+  #state: SwitchState;
 
-  constructor (defaultState: SwitchState = SwitchState.OPEN) {
+  constructor (
+    public readonly name: string = `Switch-${makeId()}`,
+    private defaultState: SwitchState = SwitchState.OPEN,
+  ) {
+    Simulation.add(this);
+
+    this.inputPin = new CircuitNode(`${name}[I]`);
+    this.closedPin = new CircuitNode(`${name}[C]`);
+    this.openPin = new CircuitNode(`${name}[O]`);
+    this.bridge = new CircuitNode(`${name}[B]`);
+
+    this.inputPin.connect(this.bridge);
+
     this.state = defaultState;
-    this.bridge.connect(this.inputPin, this.openPin);
+    this.#state = defaultState;
+  }
+
+  get state (): SwitchState {
+    return this.#state;
+  }
+
+  set state (value: SwitchState) {
+    if (value === this.#state) return;
+
+    this.bridge.disconnect(this.openPin, this.closedPin);
+
+    if (value === SwitchState.OPEN) {
+      this.bridge.connect(this.openPin);
+    } else {
+      this.bridge.connect(this.closedPin);
+    }
+
+    this.#state = value;
   }
 
   public get isOpen (): boolean {
@@ -33,30 +62,20 @@ export class Switch {
   }
 
   public open (): this {
-    if (this.isOpen) return this;
-
-    this.bridge
-      .disconnect(this.openPin, this.closedPin)
-      .connect(this.openPin);
-
     this.state = SwitchState.OPEN;
-
     return this;
   }
 
   public close (): this {
-    if (this.isClosed) return this;
-
-    this.bridge
-      .disconnect(this.openPin, this.closedPin)
-      .connect(this.closedPin);
-
     this.state = SwitchState.CLOSED;
-
     return this;
   }
 
   public toString (): string {
-    return this.isOpen ? '═╗ ' : '═══';
+    return this.isOpen ? '─═╗ ─' : '─═══─';
+  }
+
+  public onSimEndUpdate () {
+
   }
 }
